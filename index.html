@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="日々の支出を記録・管理するWebアプリケーション">
+    <title>💰 Expense Tracker - 支出管理アプリ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <h1 class="app-title">💰 Expense Tracker</h1>
+            <p class="app-subtitle">日々の支出を記録・管理</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Expense Form -->
+        <section class="expense-form-section">
+            <h2 class="section-title">支出記録フォーム</h2>
+            <form id="expense-form" class="expense-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expense-date">日付</label>
+                        <input type="date" id="expense-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-category">カテゴリー</label>
+                        <select id="expense-category" required>
+                            <option value="食費">🍔 食費</option>
+                            <option value="交通費">🚇 交通費</option>
+                            <option value="娯楽費">🎮 娯楽費</option>
+                            <option value="光熱費">💡 光熱費</option>
+                            <option value="医療費">💊 医療費</option>
+                            <option value="その他">📦 その他</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expense-amount">金額（円）</label>
+                        <input type="number" id="expense-amount" min="1" placeholder="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-memo">メモ（任意）</label>
+                        <input type="text" id="expense-memo" maxlength="200" placeholder="例: ランチ代">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <span>➕</span> 支出を追加
+                </button>
+            </form>
+        </section>
+
+        <!-- Statistics Section -->
+        <section class="stats-section">
+            <h2 class="section-title">📊 カテゴリー別集計</h2>
+            <div class="stats-card">
+                <div class="total-amount">
+                    <span class="total-label">合計支出</span>
+                    <span class="total-value" id="total-amount">¥0</span>
+                </div>
+                <div class="category-stats" id="category-stats">
+                    <!-- カテゴリー別統計はJavaScriptで動的に生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Expense List Section -->
+        <section class="expense-list-section">
+            <div class="list-header">
+                <h2 class="section-title">支出一覧</h2>
+                <button id="sync-button" class="btn-sync" title="Google Spreadsheetに同期">
+                    🔄 同期
+                </button>
+            </div>
+            <div class="expense-list" id="expense-list">
+                <!-- 支出アイテムはJavaScriptで動的に生成 -->
+                <div class="empty-state">
+                    <p>📝 まだ支出が記録されていません</p>
+                    <p class="empty-state-sub">上のフォームから支出を追加してください</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="container">
+            <p>&copy; 2025 Expense Tracker. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
