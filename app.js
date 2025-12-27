@@ -2,7 +2,7 @@
 // Configuration
 // ===========================
 const CONFIG = {
-    GAS_URL: '', // TODO: Google Apps Script Web App URLを設定してください
+    GAS_URL: 'https://script.google.com/macros/s/AKfycbwl4p2T5p6vR2rd4Sxvdziy4fi3CsKWDxKiMRGlf0MJYEl4aekLp58xtBrweai_f-RJ/exec', // TODO: Google Apps Script Web App URLを設定してください
     STORAGE_KEY: 'expenses',
     CATEGORIES: ['食費', '交通費', '娯楽費', '光熱費', '医療費', 'その他'],
     CATEGORY_CONFIG: {
@@ -41,7 +41,7 @@ function loadExpenses() {
     try {
         const stored = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (!stored) return [];
-        
+
         const data = JSON.parse(stored);
         return data.expenses || [];
     } catch (error) {
@@ -71,12 +71,12 @@ function addExpense(expense) {
     expense.id = Date.now();
     expenses.push(expense);
     saveExpenses(expenses);
-    
+
     // Google Spreadsheetに自動転送
     if (CONFIG.GAS_URL) {
         syncToSpreadsheet(expense);
     }
-    
+
     return expense;
 }
 
@@ -101,7 +101,7 @@ function syncToSpreadsheet(expense) {
         console.warn('GAS URLが設定されていません');
         return;
     }
-    
+
     fetch(CONFIG.GAS_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -113,8 +113,8 @@ function syncToSpreadsheet(expense) {
             expense: expense
         })
     })
-    .then(() => console.log('✅ Spreadsheetに転送成功:', expense))
-    .catch(error => console.error('❌ 転送エラー:', error));
+        .then(() => console.log('✅ Spreadsheetに転送成功:', expense))
+        .catch(error => console.error('❌ 転送エラー:', error));
 }
 
 /**
@@ -125,14 +125,14 @@ function syncAllToSpreadsheet() {
         alert('⚠️ Google Apps Script URLが設定されていません\n\napp.js の CONFIG.GAS_URL を設定してください');
         return;
     }
-    
+
     const expenses = loadExpenses();
-    
+
     if (expenses.length === 0) {
         alert('同期するデータがありません');
         return;
     }
-    
+
     fetch(CONFIG.GAS_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -144,14 +144,14 @@ function syncAllToSpreadsheet() {
             expenses: expenses
         })
     })
-    .then(() => {
-        alert(`✅ ${expenses.length}件のデータを同期しました`);
-        console.log('同期完了:', expenses);
-    })
-    .catch(error => {
-        alert('❌ 同期エラー: ' + error.message);
-        console.error('同期エラー:', error);
-    });
+        .then(() => {
+            alert(`✅ ${expenses.length}件のデータを同期しました`);
+            console.log('同期完了:', expenses);
+        })
+        .catch(error => {
+            alert('❌ 同期エラー: ' + error.message);
+            console.error('同期エラー:', error);
+        });
 }
 
 // ===========================
@@ -166,12 +166,12 @@ function calculateStats(expenses) {
         total: 0,
         categories: {}
     };
-    
+
     // 全カテゴリーを初期化
     CONFIG.CATEGORIES.forEach(cat => {
         stats.categories[cat] = 0;
     });
-    
+
     // 集計
     expenses.forEach(expense => {
         stats.total += expense.amount;
@@ -179,7 +179,7 @@ function calculateStats(expenses) {
             stats.categories[expense.category] += expense.amount;
         }
     });
-    
+
     return stats;
 }
 
@@ -193,7 +193,7 @@ function calculateStats(expenses) {
 function renderExpenseList() {
     const expenses = loadExpenses();
     const sortedExpenses = expenses.sort((a, b) => b.id - a.id); // 新しい順
-    
+
     if (sortedExpenses.length === 0) {
         elements.expenseList.innerHTML = `
             <div class="empty-state">
@@ -203,7 +203,7 @@ function renderExpenseList() {
         `;
         return;
     }
-    
+
     elements.expenseList.innerHTML = sortedExpenses.map(expense => {
         const config = CONFIG.CATEGORY_CONFIG[expense.category] || CONFIG.CATEGORY_CONFIG['その他'];
         return `
@@ -232,17 +232,17 @@ function renderExpenseList() {
 function renderStats() {
     const expenses = loadExpenses();
     const stats = calculateStats(expenses);
-    
+
     // 合計金額を更新
     elements.totalAmount.textContent = `¥${formatNumber(stats.total)}`;
-    
+
     // カテゴリー別統計を描画
     elements.categoryStats.innerHTML = CONFIG.CATEGORIES.map(category => {
         const amount = stats.categories[category] || 0;
         const config = CONFIG.CATEGORY_CONFIG[category];
-        
+
         if (amount === 0) return ''; // 金額が0の場合は表示しない
-        
+
         return `
             <div class="category-item">
                 <div class="category-icon" style="background-color: ${config.color}33">
@@ -257,7 +257,7 @@ function renderStats() {
             </div>
         `;
     }).join('');
-    
+
     // すべてのカテゴリーが0の場合
     if (stats.total === 0) {
         elements.categoryStats.innerHTML = `
@@ -285,30 +285,30 @@ function updateUI() {
  */
 function handleFormSubmit(e) {
     e.preventDefault();
-    
+
     const expense = {
         date: elements.dateInput.value,
         category: elements.categoryInput.value,
         amount: parseInt(elements.amountInput.value, 10),
         memo: elements.memoInput.value.trim()
     };
-    
+
     // バリデーション
     if (!expense.date || !expense.category || !expense.amount || expense.amount < 1) {
         alert('すべての必須項目を正しく入力してください');
         return;
     }
-    
+
     // 支出を追加
     addExpense(expense);
-    
+
     // フォームをリセット
     elements.form.reset();
     elements.dateInput.value = getTodayDate();
-    
+
     // UI更新
     updateUI();
-    
+
     // 成功メッセージ
     console.log('✅ 支出を追加しました:', expense);
 }
@@ -356,7 +356,7 @@ function formatDate(dateString) {
     const day = date.getDate();
     const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
     const weekday = weekdays[date.getDay()];
-    
+
     return `${year}年${month}月${day}日 (${weekday})`;
 }
 
@@ -376,17 +376,17 @@ function formatNumber(num) {
  */
 function init() {
     console.log('💰 Expense Tracker を起動しました');
-    
+
     // 今日の日付をデフォルト設定
     elements.dateInput.value = getTodayDate();
-    
+
     // イベントリスナー登録
     elements.form.addEventListener('submit', handleFormSubmit);
     elements.syncButton.addEventListener('click', handleSync);
-    
+
     // 初期表示
     updateUI();
-    
+
     // GAS URL未設定の警告
     if (!CONFIG.GAS_URL) {
         console.warn('⚠️ Google Apps Script URLが設定されていません\n自動同期機能を使用するには、app.js の CONFIG.GAS_URL を設定してください');
